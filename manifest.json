@@ -2,5 +2,17 @@
     "name": "Gif Summarizer",
     "description" : "Takes longer texts and condesnses them to a series of gifs",
     "version": "1.0",
-    "manifest_version": 2
+    "manifest_version": 2,
+
+    "content_scripts": [
+
+        {
+    
+          "matches": ["http://*/*", "https://*/*"],
+    
+          "js": ["src/build/main.js"]
+    
+        }
+    
+      ]
   }
