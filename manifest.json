@@ -1,0 +1,6 @@
+{
+    "name": "Gif Summarizer",
+    "description" : "Takes longer texts and condesnses them to a series of gifs",
+    "version": "1.0",
+    "manifest_version": 2
+  }
