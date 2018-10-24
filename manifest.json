@@ -7,14 +7,25 @@
     "permissions": [
         "contextMenus",
         "activeTab",
-    
+        "webNavigation",
+
         "tabs"
     
       ],
 
+    "content_scripts": [
+
+        {
     
+          "matches": ["<all_urls>"],
+    
+          "js": ["src/build/main.js"]
+    
+        }
+        
+      ],
       "background": {
-        "scripts": ["src/build/main.js"]
+        "scripts": ["src/js/background.js"]
       }
     
 
