@@ -9,10 +9,12 @@
   },
   "author": "Arihant Jain",
   "dependencies": {
+    "@material-ui/core": "^3.5.1",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
-    "parcel-bundler": "^1.6.2",
+    "parcel-bundler": "^1.10.3",
     "react": "^16.2.0",
+    "react-chrome-redux": "^2.0.0-alpha.4",
     "react-dom": "^16.2.0"
   }
 }

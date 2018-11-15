@@ -1,4 +1,9 @@
-chrome.runtime.onMessage.addListener(
+import React from 'react';
+
+import ReactDOM from 'react-dom';
+console.log("gif Summarizer active");
+
+var listen = chrome.runtime.onMessage.addListener(
   function (request, sender, sendResponse) {
 
     console.log(request);
@@ -7,13 +12,17 @@ chrome.runtime.onMessage.addListener(
       "from the extension");
     if (request.greeting == "hello")
       sendResponse({ farewell: "goodbye" });
+    if (request.greeting == "phrases") {
+      sendResponse({ farewell: "gotPhrases" });
+      let r = new Range();
+      r.setStart(window.getSelection().anchorNode, 0);
+      if (window.getSelection().focusNode.nodeValue == null)
+        r.setEnd(window.getSelection().focusNode, 0);
+      else
+        r.setEnd(window.getSelection().focusNode, window.getSelection().focusNode.nodeValue.length);
+      console.log(r.cloneContents());
+    }
   });
-
-
-import React from 'react';
-
-import ReactDOM from 'react-dom';
-
 
 
 class App extends React.Component {
@@ -32,7 +41,6 @@ class App extends React.Component {
 
 
 
-// Message Listener function
 
 
 
@@ -49,3 +57,4 @@ function injectApp() {
   ReactDOM.render(<App />, newDiv);
 
 }
+
