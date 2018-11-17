@@ -32,7 +32,7 @@ function generateGifs(info, tab) {
       console.log(data.documents[0].keyPhrases);
       console.log(tab);
       chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, { greeting: "phrases", keyphrases: data.documents[0].keyPhrases, info: info }, function (response) {
+        chrome.tabs.sendMessage(tabs[0].id, { greeting: "phrases", keyphrases: data.documents[0].keyPhrases }, function (response) {
           console.log(response.farewell);
         });
       });

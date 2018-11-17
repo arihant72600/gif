@@ -24026,6 +24026,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -24043,6 +24051,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 console.log("gif Summarizer active");
+var api_key = 'ETf2pwrpJCGOOnNiEXyRVcrQcZ8NS7a6';
 var listen = chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   console.log(request);
   console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
@@ -24054,10 +24063,21 @@ var listen = chrome.runtime.onMessage.addListener(function (request, sender, sen
     sendResponse({
       farewell: "gotPhrases"
     });
-    var r = new Range();
-    r.setStart(window.getSelection().anchorNode, 0);
-    if (window.getSelection().focusNode.nodeValue == null) r.setEnd(window.getSelection().focusNode, 0);else r.setEnd(window.getSelection().focusNode, window.getSelection().focusNode.nodeValue.length);
+    var r = window.getSelection().getRangeAt(0);
+    var x = r.cloneContents();
+    r.deleteContents();
+    r.insertNode(x);
     console.log(r.cloneContents());
+    request.keyphrases.forEach(function (element) {
+      fetch('https://api.giphy.com/v1/gifs/translate?api_key=' + api_key + '&s=' + element, {
+        method: 'GET'
+      }).then(function (value) {
+        return value.json().then(function (data) {
+          return gifApp.insertApp(element, data.embed_url);
+        });
+      });
+      console.log(element + "hi");
+    });
   }
 });
 
@@ -24066,29 +24086,75 @@ var App =
 function (_React$Component) {
   _inherits(App, _React$Component);
 
-  function App() {
+  function App(props) {
+    var _this;
+
     _classCallCheck(this, App);
 
-    return _possibleConstructorReturn(this, _getPrototypeOf(App).apply(this, arguments));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(App).call(this, props));
+    _this.state = {
+      gifs: []
+    };
+    return _this;
   }
 
   _createClass(App, [{
     key: "render",
     value: function render() {
-      return _react.default.createElement("div", null, " Your App injected to DOM correctly! ");
+      return _react.default.createElement("div", {
+        id: "chrome-extension"
+      }, "\"Gifs:\"", this.state.gifs.map(function (ge) {
+        return _react.default.createElement(GifElement, {
+          phrase: ge.phrase,
+          url: ge.url
+        });
+      }));
+    }
+  }, {
+    key: "insertApp",
+    value: function insertApp(keyphrase, gifUrl) {
+      this.setState({
+        gifs: _toConsumableArray(this.state.gifs).concat([{
+          phrase: keyphrase,
+          url: gifUrl
+        }])
+      });
     }
   }]);
 
   return App;
 }(_react.default.Component);
 
-function injectApp() {
-  var newDiv = document.createElement("div");
-  newDiv.setAttribute("id", "chromeExtensionReactApp");
-  document.body.appendChild(newDiv);
+var GifElement =
+/*#__PURE__*/
+function (_React$Component2) {
+  _inherits(GifElement, _React$Component2);
 
-  _reactDom.default.render(_react.default.createElement(App, null), newDiv);
-}
+  function GifElement(props) {
+    var _this2;
+
+    _classCallCheck(this, GifElement);
+
+    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(GifElement).call(this, props));
+    _this2.state = {
+      phrase: props.phrase,
+      url: props.url
+    };
+    return _possibleConstructorReturn(_this2, _react.default.createElement("div", null, _this2.state.props, _react.default.createElement("img", {
+      src: _this2.state.url
+    })));
+  }
+
+  return GifElement;
+}(_react.default.Component);
+
+var newDiv = document.createElement("div");
+newDiv.setAttribute("id", "chromeExtensionReactApp");
+document.body.appendChild(newDiv);
+
+var gifApp = _reactDom.default.render(_react.default.createElement(App, null), newDiv);
+
+console.log("rendered");
 },{"react":"../../node_modules/react/index.js","react-dom":"../../node_modules/react-dom/index.js"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -24116,7 +24182,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62087" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58965" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
