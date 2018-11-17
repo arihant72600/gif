@@ -24051,35 +24051,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 console.log("gif Summarizer active");
-var api_key = 'ETf2pwrpJCGOOnNiEXyRVcrQcZ8NS7a6';
-var listen = chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  console.log(request);
-  console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
-  if (request.greeting == "hello") sendResponse({
-    farewell: "goodbye"
-  });
-
-  if (request.greeting == "phrases") {
-    sendResponse({
-      farewell: "gotPhrases"
-    });
-    var r = window.getSelection().getRangeAt(0);
-    var x = r.cloneContents();
-    r.deleteContents();
-    r.insertNode(x);
-    console.log(r.cloneContents());
-    request.keyphrases.forEach(function (element) {
-      fetch('https://api.giphy.com/v1/gifs/translate?api_key=' + api_key + '&s=' + element, {
-        method: 'GET'
-      }).then(function (value) {
-        return value.json().then(function (data) {
-          return gifApp.insertApp(element, data.embed_url);
-        });
-      });
-      console.log(element + "hi");
-    });
-  }
-});
+var api_key = 'QT3UfwWkbHCq4nT6gr8NSRWhS4gXWmyA';
 
 var App =
 /*#__PURE__*/
@@ -24103,8 +24075,9 @@ function (_React$Component) {
     value: function render() {
       return _react.default.createElement("div", {
         id: "chrome-extension"
-      }, "\"Gifs:\"", this.state.gifs.map(function (ge) {
+      }, "\"Gifs:\"", this.state.gifs.map(function (ge, index) {
         return _react.default.createElement(GifElement, {
+          key: index,
           phrase: ge.phrase,
           url: ge.url
         });
@@ -24136,14 +24109,18 @@ function (_React$Component2) {
     _classCallCheck(this, GifElement);
 
     _this2 = _possibleConstructorReturn(this, _getPrototypeOf(GifElement).call(this, props));
-    _this2.state = {
-      phrase: props.phrase,
-      url: props.url
-    };
-    return _possibleConstructorReturn(_this2, _react.default.createElement("div", null, _this2.state.props, _react.default.createElement("img", {
-      src: _this2.state.url
-    })));
+    console.log(props);
+    return _this2;
   }
+
+  _createClass(GifElement, [{
+    key: "render",
+    value: function render() {
+      return _react.default.createElement("div", null, this.props.phrase, _react.default.createElement("img", {
+        src: this.props.url
+      }));
+    }
+  }]);
 
   return GifElement;
 }(_react.default.Component);
@@ -24154,7 +24131,35 @@ document.body.appendChild(newDiv);
 
 var gifApp = _reactDom.default.render(_react.default.createElement(App, null), newDiv);
 
-console.log("rendered");
+var listen = chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  console.log(request);
+  console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
+  if (request.greeting == "hello") sendResponse({
+    farewell: "goodbye"
+  });
+
+  if (request.greeting == "phrases") {
+    sendResponse({
+      farewell: "gotPhrases"
+    });
+    var r = window.getSelection().getRangeAt(0);
+    var x = r.cloneContents();
+    r.deleteContents();
+    r.insertNode(x);
+    console.log(r.cloneContents());
+    request.keyphrases.forEach(function (element) {
+      console.log("fetching");
+      fetch('https://api.giphy.com/v1/gifs/translate?api_key=' + api_key + '&s=' + element, {
+        method: 'GET'
+      }).then(function (value) {
+        return value.json().then(function (data) {
+          return gifApp.insertApp(element, data.embed_url);
+        });
+      });
+      console.log(element + "hi");
+    });
+  }
+});
 },{"react":"../../node_modules/react/index.js","react-dom":"../../node_modules/react-dom/index.js"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
