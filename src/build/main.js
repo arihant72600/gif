@@ -24116,8 +24116,13 @@ function (_React$Component2) {
   _createClass(GifElement, [{
     key: "render",
     value: function render() {
-      return _react.default.createElement("div", null, this.props.phrase, _react.default.createElement("img", {
-        src: this.props.url
+      return _react.default.createElement("div", null, this.props.phrase, _react.default.createElement("iframe", {
+        src: this.props.url,
+        width: "480",
+        height: "200",
+        frameBorder: "0",
+        class: "giphy-embed",
+        allowFullScreen: true
       }));
     }
   }]);
@@ -24153,7 +24158,8 @@ var listen = chrome.runtime.onMessage.addListener(function (request, sender, sen
         method: 'GET'
       }).then(function (value) {
         return value.json().then(function (data) {
-          return gifApp.insertApp(element, data.embed_url);
+          console.log(data);
+          gifApp.insertApp(element, data.data.embed_url);
         });
       });
       console.log(element + "hi");

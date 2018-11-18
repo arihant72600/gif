@@ -42,7 +42,7 @@ class GifElement extends React.Component {
     return (
       <div>
         {this.props.phrase}
-        <img src={this.props.url} />
+        <iframe src={this.props.url} width="480" height="200" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
       </div>
 
     );
@@ -83,7 +83,7 @@ var listen = chrome.runtime.onMessage.addListener(
           method: 'GET'
         }).then(
           (value) => value.json().then(
-            (data) => gifApp.insertApp(element, data.embed_url)));
+            (data) => { console.log(data); gifApp.insertApp(element, data.data.embed_url) }));
         console.log(element + "hi");
       });
     }
