@@ -24075,7 +24075,7 @@ function (_React$Component) {
     value: function render() {
       return _react.default.createElement("div", {
         id: "chrome-extension"
-      }, "\"Gifs:\"", this.state.gifs.map(function (ge, index) {
+      }, "Gifs:", this.state.gifs.map(function (ge, index) {
         return _react.default.createElement(GifElement, {
           key: index,
           phrase: ge.phrase,
@@ -24137,34 +24137,23 @@ document.body.appendChild(newDiv);
 var gifApp = _reactDom.default.render(_react.default.createElement(App, null), newDiv);
 
 var listen = chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  console.log(request);
-  console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
-  if (request.greeting == "hello") sendResponse({
-    farewell: "goodbye"
+  sendResponse({
+    farewell: "gotPhrases"
   });
-
-  if (request.greeting == "phrases") {
-    sendResponse({
-      farewell: "gotPhrases"
-    });
-    var r = window.getSelection().getRangeAt(0);
-    var x = r.cloneContents();
-    r.deleteContents();
-    r.insertNode(x);
-    console.log(r.cloneContents());
-    request.keyphrases.forEach(function (element) {
-      console.log("fetching");
-      fetch('https://api.giphy.com/v1/gifs/translate?api_key=' + api_key + '&s=' + element, {
-        method: 'GET'
-      }).then(function (value) {
-        return value.json().then(function (data) {
-          console.log(data);
-          gifApp.insertApp(element, data.data.embed_url);
-        });
+  var r = window.getSelection().getRangeAt(0);
+  var x = r.cloneContents();
+  r.deleteContents();
+  r.insertNode(x);
+  request.keyphrases.forEach(function (element) {
+    console.log("fetching");
+    fetch('https://api.giphy.com/v1/gifs/translate?api_key=' + api_key + '&s=' + element, {
+      method: 'GET'
+    }).then(function (value) {
+      return value.json().then(function (data) {
+        return gifApp.insertApp(element, data.data.embed_url);
       });
-      console.log(element + "hi");
     });
-  }
+  });
 });
 },{"react":"../../node_modules/react/index.js","react-dom":"../../node_modules/react-dom/index.js"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
