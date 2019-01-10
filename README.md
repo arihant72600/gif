@@ -4,8 +4,8 @@ A chrome extension that will take text and show the user a series of related gif
 
 # Example
 
-![alt text](pictures\firstgsr.PNG)
+![alt text](pictures/firstgsr.PNG)
 
-![alt text](pictures\highlightgsr.PNG)
+![alt text](pictures/highlightgsr.PNG)
 
-![alt text](pictures\gsreffect.PNG)
+![alt text](pictures/gsreffect.PNG)
