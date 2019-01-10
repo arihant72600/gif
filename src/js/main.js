@@ -5,31 +5,31 @@ import ReactDOM from "react-dom";
 let api_key = "QT3UfwWkbHCq4nT6gr8NSRWhS4gXWmyA";
 
 const matchText = function(node, regex, callback) {
-  console.log(node);
+  //console.log(node);
   var excludeElements = ["script", "style", "iframe", "canvas"];
   if (node === null) return;
   if (node.nodeType === 3) var child = node;
   else var child = node.firstChild;
 
   while (child) {
-    console.log(child);
+    //console.log(child);
     switch (child.nodeType) {
       case 1:
-        console.log(child);
+        //console.log(child);
         if (excludeElements.indexOf(child.tagName.toLowerCase()) > -1) {
           break;
         }
-        console.log("setting timeout");
-        console.log(child);
+        //console.log("setting timeout");
+        //console.log(child);
         ((c, r, ca) =>
           setTimeout(() => {
-            console.log("calling setTimeOut");
-            console.log(c);
+            //console.log("calling setTimeOut");
+            //console.log(c);
             matchText(c, r, ca);
           }, 0))(child, regex, callback);
         break;
       case 3:
-        console.log(child.data);
+        //console.log(child.data);
         var bk = 0;
         child.data.replace(regex, function(all) {
           var args = [].slice.call(arguments),
@@ -53,8 +53,8 @@ const matchText = function(node, regex, callback) {
 };
 
 const matchPhrase = (ancestor, searchTerm, url) => {
-  console.log(searchTerm);
-  console.log(ancestor);
+  //console.log(searchTerm);
+  //console.log(ancestor);
   setTimeout(
     () =>
       matchText(
@@ -65,7 +65,7 @@ const matchPhrase = (ancestor, searchTerm, url) => {
           span.id = "gifSummary";
           span.textContent = match;
           setTimeout(() => {
-            console.log(span);
+            //console.log(span);
             ReactDOM.render(<GifElement phrase={searchTerm} url={url} />, span);
           }, 3000);
           return span;
@@ -103,7 +103,7 @@ var listen = chrome.runtime.onMessage.addListener(function(
   let commonAncestor = r.commonAncestorContainer;
 
   request.keyphrases.forEach(element => {
-    console.log("fetching");
+    //console.log("fetching");
     fetch(
       "https://api.giphy.com/v1/gifs/translate?api_key=" +
         api_key +
@@ -112,9 +112,9 @@ var listen = chrome.runtime.onMessage.addListener(function(
       { method: "GET" }
     ).then(value =>
       value.json().then(data => {
-        console.log("calling matchPhrase on" + data);
+        //console.log("calling matchPhrase on" + data);
         matchPhrase(commonAncestor, element, data.data.embed_url);
-        console.log("finished calling matchPhrase");
+        //console.log("finished calling matchPhrase");
       })
     );
   });
