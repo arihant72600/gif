@@ -67,7 +67,7 @@ const matchPhrase = (ancestor, searchTerm, url) => {
           setTimeout(() => {
             console.log(span);
             ReactDOM.render(<GifElement phrase={searchTerm} url={url} />, span);
-          }, 0);
+          }, 3000);
           return span;
         }
       ),
