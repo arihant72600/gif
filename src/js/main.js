@@ -17,7 +17,7 @@ const matchText = function(node, regex, callback) {
       case 1:
         console.log(child);
         if (excludeElements.indexOf(child.tagName.toLowerCase()) > -1) {
-          continue;
+          break;
         }
         console.log("setting timeout");
         console.log(child);
@@ -61,9 +61,9 @@ const matchPhrase = (ancestor, searchTerm, url) => {
         ancestor,
         new RegExp("\\b" + searchTerm + "\\b", "g"),
         (node, match, offset) => {
-          console.log(node);
           var span = document.createElement("span");
           span.id = "gifSummary";
+          span.textContent = match;
           setTimeout(() => {
             console.log(span);
             ReactDOM.render(<GifElement phrase={searchTerm} url={url} />, span);
@@ -73,34 +73,7 @@ const matchPhrase = (ancestor, searchTerm, url) => {
       ),
     0
   );
-  //gifApp.insertApp(searchTerm, url);
 };
-
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      gifs: []
-    };
-  }
-
-  render() {
-    return (
-      <div id="chrome-extension">
-        Gifs:
-        {this.state.gifs.map((ge, index) => (
-          <GifElement key={index} phrase={ge.phrase} url={ge.url} />
-        ))}
-      </div>
-    );
-  }
-
-  insertApp(keyphrase, gifUrl) {
-    this.setState({
-      gifs: [...this.state.gifs, { phrase: keyphrase, url: gifUrl }]
-    });
-  }
-}
 
 class GifElement extends React.Component {
   render() {
@@ -120,14 +93,6 @@ class GifElement extends React.Component {
   }
 }
 
-let newDiv = document.createElement("div");
-
-newDiv.setAttribute("id", "chromeExtensionReactApp");
-
-document.body.appendChild(newDiv);
-
-let gifApp = ReactDOM.render(<App />, newDiv);
-
 var listen = chrome.runtime.onMessage.addListener(function(
   request,
   sender,
@@ -146,9 +111,11 @@ var listen = chrome.runtime.onMessage.addListener(function(
         element,
       { method: "GET" }
     ).then(value =>
-      value
-        .json()
-        .then(data => matchPhrase(commonAncestor, element, data.data.embed_url))
+      value.json().then(data => {
+        console.log("calling matchPhrase on" + data);
+        matchPhrase(commonAncestor, element, data.data.embed_url);
+        console.log("finished calling matchPhrase");
+      })
     );
   });
 });
