@@ -24050,8 +24050,82 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-console.log("gif Summarizer active");
-var api_key = 'QT3UfwWkbHCq4nT6gr8NSRWhS4gXWmyA';
+var api_key = "QT3UfwWkbHCq4nT6gr8NSRWhS4gXWmyA";
+
+var matchText = function matchText(node, regex, callback) {
+  console.log(node);
+  var excludeElements = ["script", "style", "iframe", "canvas"];
+  if (node === null) return;
+  if (node.nodeType === 3) var child = node;else var child = node.firstChild;
+
+  while (child) {
+    console.log(child);
+
+    switch (child.nodeType) {
+      case 1:
+        console.log(child);
+
+        if (excludeElements.indexOf(child.tagName.toLowerCase()) > -1) {
+          continue;
+        }
+
+        console.log("setting timeout");
+        console.log(child);
+
+        (function (c, r, ca) {
+          return setTimeout(function () {
+            console.log("calling setTimeOut");
+            console.log(c);
+            matchText(c, r, ca);
+          }, 0);
+        })(child, regex, callback);
+
+        break;
+
+      case 3:
+        console.log(child.data);
+        var bk = 0;
+        child.data.replace(regex, function (all) {
+          var args = [].slice.call(arguments),
+              offset = args[args.length - 2],
+              newTextNode = child.splitText(offset + bk),
+              tag;
+          bk -= child.data.length + all.length;
+          newTextNode.data = newTextNode.data.substr(all.length);
+          tag = callback.apply(window, [child].concat(args));
+          child.parentNode.insertBefore(tag, newTextNode);
+          child = newTextNode;
+        });
+        regex.lastIndex = 0;
+        break;
+    }
+
+    child = child.nextSibling;
+  }
+
+  return node;
+};
+
+var matchPhrase = function matchPhrase(ancestor, searchTerm, url) {
+  console.log(searchTerm);
+  console.log(ancestor);
+  setTimeout(function () {
+    return matchText(ancestor, new RegExp("\\b" + searchTerm + "\\b", "g"), function (node, match, offset) {
+      console.log(node);
+      var span = document.createElement("span");
+      span.id = "gifSummary";
+      setTimeout(function () {
+        console.log(span);
+
+        _reactDom.default.render(_react.default.createElement(GifElement, {
+          phrase: searchTerm,
+          url: url
+        }), span);
+      }, 0);
+      return span;
+    });
+  }, 0); //gifApp.insertApp(searchTerm, url);
+};
 
 var App =
 /*#__PURE__*/
@@ -24103,14 +24177,10 @@ var GifElement =
 function (_React$Component2) {
   _inherits(GifElement, _React$Component2);
 
-  function GifElement(props) {
-    var _this2;
-
+  function GifElement() {
     _classCallCheck(this, GifElement);
 
-    _this2 = _possibleConstructorReturn(this, _getPrototypeOf(GifElement).call(this, props));
-    console.log(props);
-    return _this2;
+    return _possibleConstructorReturn(this, _getPrototypeOf(GifElement).apply(this, arguments));
   }
 
   _createClass(GifElement, [{
@@ -24121,7 +24191,7 @@ function (_React$Component2) {
         width: "480",
         height: "200",
         frameBorder: "0",
-        class: "giphy-embed",
+        className: "giphy-embed",
         allowFullScreen: true
       }));
     }
@@ -24141,16 +24211,14 @@ var listen = chrome.runtime.onMessage.addListener(function (request, sender, sen
     farewell: "gotPhrases"
   });
   var r = window.getSelection().getRangeAt(0);
-  var x = r.cloneContents();
-  r.deleteContents();
-  r.insertNode(x);
+  var commonAncestor = r.commonAncestorContainer;
   request.keyphrases.forEach(function (element) {
     console.log("fetching");
-    fetch('https://api.giphy.com/v1/gifs/translate?api_key=' + api_key + '&s=' + element, {
-      method: 'GET'
+    fetch("https://api.giphy.com/v1/gifs/translate?api_key=" + api_key + "&s=" + element, {
+      method: "GET"
     }).then(function (value) {
       return value.json().then(function (data) {
-        return gifApp.insertApp(element, data.data.embed_url);
+        return matchPhrase(commonAncestor, element, data.data.embed_url);
       });
     });
   });
@@ -24182,7 +24250,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58965" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51135" + '/');
 
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
