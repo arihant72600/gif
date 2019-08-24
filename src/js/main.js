@@ -67,7 +67,7 @@ const matchPhrase = (ancestor, searchTerm, url) => {
           setTimeout(() => {
             //console.log(span);
             ReactDOM.render(<GifElement phrase={searchTerm} url={url} />, span);
-          }, 3000);
+          }, 0);
           return span;
         }
       ),
@@ -78,7 +78,7 @@ const matchPhrase = (ancestor, searchTerm, url) => {
 class GifElement extends React.Component {
   render() {
     return (
-      <div>
+      <div style={{ display: "inline" }}>
         {this.props.phrase}
         <iframe
           src={this.props.url}
